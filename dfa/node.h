@@ -9,16 +9,23 @@ extern "C" {
 
 struct mpool;
 
+typedef struct dfa_pattern {
+    char *string;
+    void *argument;
+} dfa_pattern_t;
+
 typedef struct dfa_node {
     char chr;
     int final:1;
     struct rb_root root;
     struct rb_node node;
-    char *word; /* trade space for time, only for final == 0 */
+    dfa_pattern_t *patt; /* trade space for time, only for final == 0 */
 } dfa_node_t;
 
 #define dfa_node_set_chr(n, c) (n->chr = c)
-#define dfa_node_set_final(n, f) (n->final = f);
+#define dfa_node_set_final(n, f) (n->final = f)
+#define dfa_node_set_pattern(n, p) (n->patt = p)
+#define dfa_node_is_fanal(n) (n->final == 1)
 
 dfa_node_t *dfa_node_create(struct mpool *mp);
 dfa_node_t *dfa_node_find_child(struct rb_root *root, char chr);
