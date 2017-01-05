@@ -25,7 +25,7 @@ typedef struct dfa_node {
 #define dfa_node_set_chr(n, c) (n->chr = c)
 #define dfa_node_set_final(n, f) (n->final = f)
 #define dfa_node_set_pattern(n, p) (n->patt = p)
-#define dfa_node_is_fanal(n) (n->final == 1)
+#define dfa_node_is_final(n) (n->final == 1)
 
 dfa_node_t *dfa_node_create(struct mpool *mp);
 dfa_node_t *dfa_node_find_child(struct rb_root *root, char chr);
