@@ -88,9 +88,15 @@ int dfa_trie_find_next(dfa_trie_t *trie, char *text, dfa_match_t *match)
     return 0;
 }
 
-int dfa_trie_match(dfa_trie_t *trie, char *text, dfa_match_cb cb)
+int dfa_trie_match(dfa_trie_t *trie, char *text, enum dfa_match_type mt, dfa_match_cb cb)
 {
-    return 0;
+    dfa_match_t match = MATCH_INIT_MIN;
+    int count = 0;
+    while (dfa_trie_find_next(trie, text, &match)) {
+        cb(match.pattern->string, match.pattern->argument);
+        count++;
+    }
+    return count;
 }
 
 void dfa_trie_release(dfa_trie_t *trie)

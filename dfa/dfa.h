@@ -31,10 +31,13 @@ typedef struct dfa_match {
     enum dfa_match_type mt;
 } dfa_match_t;
 
+#define MATCH_INIT_MIN {.pattern = NULL, .size = 0, .pos = 0, .mt = MATCH_TYPE_MIN}
+#define MATCH_INIT_MAX {.pattern = NULL, .size = 0, .pos = 0, .mt = MATCH_TYPE_MIN}
+
 dfa_trie_t *dfa_trie_create();
 int dfa_trie_add(dfa_trie_t *trie, char *string, void *argument);
 int dfa_trie_find_next(dfa_trie_t *trie, char *text, dfa_match_t *match);
-int dfa_trie_match(dfa_trie_t *trie, char *text, dfa_match_cb cb);
+int dfa_trie_match(dfa_trie_t *trie, char *text, enum dfa_match_type mt, dfa_match_cb cb);
 void dfa_trie_release(dfa_trie_t *trie);
 
 #ifdef __cplusplus
