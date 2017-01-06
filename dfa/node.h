@@ -16,7 +16,7 @@ typedef struct dfa_pattern {
 
 typedef struct dfa_node {
     char chr;
-    int final:1;
+    char final;
     struct rb_root root;
     struct rb_node node;
     dfa_pattern_t *patt; /* trade space for time, only for final == 0 */

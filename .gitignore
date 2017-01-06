@@ -32,3 +32,4 @@
 *.dSYM/
 *.su
 dfa/build
+example/example

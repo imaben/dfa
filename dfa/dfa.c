@@ -26,7 +26,7 @@ int dfa_trie_add(dfa_trie_t *trie, char *string, void *argument)
     dfa_node_t *n, *new;
     while (*p != '\0') {
         n = dfa_node_find_child(root, *p);
-        if (NULL == n) { // insert new node
+        if (!n) { // insert new node
             new = dfa_node_create(trie->mp);
             dfa_node_set_chr(new, *p);
             dfa_node_insert(root, new);
@@ -36,11 +36,15 @@ int dfa_trie_add(dfa_trie_t *trie, char *string, void *argument)
         }
         p++;
     }
-    dfa_node_set_final(new, 1);
+
+    n = container_of(root, struct dfa_node, root);
+    dfa_node_set_final(n, 1);
+
     dfa_pattern_t *patt = mpool_malloc(trie->mp, sizeof(dfa_pattern_t));
     patt->string = mpool_strdup(trie->mp, string);
     patt->argument = argument;
-    dfa_node_set_pattern(new, patt);
+
+    dfa_node_set_pattern(n, patt);
     return 0;
 }
 
@@ -48,7 +52,7 @@ static int dfa_trie_find_next_bs(dfa_trie_t *trie, char *text,
         enum dfa_match_type mt, dfa_node_t **nnode)
 {
     int i, len = strlen(text);
-    int match_len = 0;
+    int match_len = 0, flag = 0;
     dfa_node_t *node = NULL;
     struct rb_root *root = &trie->root->root;
     for (i = 0; i < len; i++) {
@@ -59,12 +63,17 @@ static int dfa_trie_find_next_bs(dfa_trie_t *trie, char *text,
         }
         // found
         match_len++;
-        *nnode = node;
         if (dfa_node_is_final(node)) {
+            flag = 1;
+            *nnode = node;
             if (mt == MATCH_TYPE_MIN) {
                 break;
             }
         }
+        root = &node->root;
+    }
+    if (!flag) {
+        match_len = 0;
     }
     return match_len;
 }
@@ -77,20 +86,26 @@ int dfa_trie_find_next(dfa_trie_t *trie, char *text, dfa_match_t *match)
     int len = strlen(text), ml = 0;
     dfa_node_t *node;
     while (match->pos < len) {
-        match->pos++;
         if ((ml = dfa_trie_find_next_bs(trie, text + match->pos,
                         match->mt, &node)) > 0) {
             match->size = ml;
+            match->pos++;
             match->pattern = node->patt;
             return 1;
         }
+        match->pos++;
     }
     return 0;
 }
 
 int dfa_trie_match(dfa_trie_t *trie, char *text, enum dfa_match_type mt, dfa_match_cb cb)
 {
-    dfa_match_t match = MATCH_INIT_MIN;
+    dfa_match_t match;
+    if (mt == MATCH_TYPE_MIN)
+        match = MATCH_INIT_MIN;
+    else
+        match = MATCH_INIT_MAX;
+
     int count = 0;
     while (dfa_trie_find_next(trie, text, &match)) {
         cb(match.pattern->string, match.pattern->argument);

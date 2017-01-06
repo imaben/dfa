@@ -31,8 +31,8 @@ typedef struct dfa_match {
     enum dfa_match_type mt;
 } dfa_match_t;
 
-#define MATCH_INIT_MIN {.pattern = NULL, .size = 0, .pos = 0, .mt = MATCH_TYPE_MIN}
-#define MATCH_INIT_MAX {.pattern = NULL, .size = 0, .pos = 0, .mt = MATCH_TYPE_MIN}
+#define MATCH_INIT_MIN (struct dfa_match){.pattern = NULL, .size = 0, .pos = 0, .mt = MATCH_TYPE_MIN}
+#define MATCH_INIT_MAX (struct dfa_match){.pattern = NULL, .size = 0, .pos = 0, .mt = MATCH_TYPE_MAX}
 
 dfa_trie_t *dfa_trie_create();
 int dfa_trie_add(dfa_trie_t *trie, char *string, void *argument);
