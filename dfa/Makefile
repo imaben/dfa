@@ -21,3 +21,4 @@ $(BUILD_DIRECTORY):
 
 clean:
 	rm -rf $(LIB_TARGET) $(OBJECT_FILES)
+	rm -rf $(BUILD_DIRECTORY)
