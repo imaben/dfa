@@ -101,10 +101,7 @@ int dfa_trie_find_next(dfa_trie_t *trie, char *text, dfa_match_t *match)
 int dfa_trie_match(dfa_trie_t *trie, char *text, enum dfa_match_type mt, dfa_match_cb cb)
 {
     dfa_match_t match;
-    if (mt == MATCH_TYPE_MIN)
-        match = MATCH_INIT_MIN;
-    else
-        match = MATCH_INIT_MAX;
+    match = (mt == MATCH_TYPE_MIN) ? MATCH_INIT_MIN : MATCH_INIT_MAX;
 
     int count = 0;
     while (dfa_trie_find_next(trie, text, &match)) {
